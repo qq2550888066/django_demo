@@ -21,5 +21,7 @@ urlpatterns = [
 
     # 添加, 使用include将子应用中的全部路由都包含到工程路由中,namespace是命名空间,避免不同应用中的路由使用了相同的名字发生冲突，使用命名空间区别开。
 
-    url(r'^users/', include("users.urls",namespace="users")),
+    url(r'^users/', include("users.urls", namespace="users")),
+
+    url(r'^', include("book.urls", namespace="books")),
 ]
