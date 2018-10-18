@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # 注册安装子应用
     'users.apps.UsersConfig',
     'book.apps.BookConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

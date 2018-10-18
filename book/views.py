@@ -7,8 +7,10 @@ from django.shortcuts import render
 from datetime import datetime
 
 from django.views import View
+from rest_framework.viewsets import ModelViewSet
 
 from book.models import BookInfo
+from book.serializers import BookInfoSerializer1
 
 
 class BooksAPIView1(View):
@@ -142,3 +144,9 @@ class BooksAPIView2(View):
         book.delete()
 
         return HttpResponse("删除成功", status=204)
+
+class BookInfoViewSet(ModelViewSet):
+    queryset = BookInfo.objects.all()
+    serializer_class = BookInfoSerializer1
+
+
