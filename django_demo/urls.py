@@ -15,13 +15,21 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework.documentation import include_docs_urls
+
+from users.views import index
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),  # django默认添加,用于站点管理
 
-    # 添加, 使用include将子应用中的全部路由都包含到工程路由中,namespace是命名空间,避免不同应用中的路由使用了相同的名字发生冲突，使用命名空间区别开。
+    url(r'^docs/', include_docs_urls(title='My API title')),
 
-    url(r'^users/', include("users.urls", namespace="users")),
+    #     url(路径,函数)
+    #     url(r'index',index),
+    # url(路由前缀, include('blog.urls'))
+    url(r'^users/', include('users.urls', namespace='users')),
 
-    url(r'^', include("book.urls", namespace="books")),
+    # 图书的子路由
+    # url(r'^api/', include('books.urls')),
+    url(r'^', include('books.urls')),
 ]

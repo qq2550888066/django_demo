@@ -14,17 +14,26 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# os.path.abspath(__file__) 找到settings.py的绝对路径
+# os.path.dirname(os.path.abspath(__file__)) 找到settings.py 所在的文件夹路径
+# os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 找到工程路径
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'nef&n#g+-e#5!7v%6hs5o&!&!fm19m((278(!@inx%kbc4ru0m'
+SECRET_KEY = ')csl(8cw4%_v)a%c_4b+*7o-j(&796nqzgamgd&$ksow9n*eya'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# django默认开启debug模式
 DEBUG = True
-
 ALLOWED_HOSTS = []
+
+# debug为False时必须添加可以访问的域名
+# ALLOWED_HOSTS = ['*','www.meiduo.site']
+#
+# DEBUG = False
 
 # Application definition
 
@@ -35,28 +44,38 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 注册安装子应用
-    'users.apps.UsersConfig',
-    'book.apps.BookConfig',
+    # DRF框架子应用
     'rest_framework',
+    'django_filters',
+
+    # 注册子应用
+    'users.apps.UsersConfig',
+    # 注册books子应用
+    'books.apps.BooksConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # session中间件
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 关闭csrf验证
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 注册中间件
+    'users.middleware.my_middleware',
+    'users.middleware.my_middleware2',
 ]
 
-ROOT_URLCONF = "django_demo.urls"
+ROOT_URLCONF = 'django_demo.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 指明模板路径
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,21 +93,14 @@ WSGI_APPLICATION = 'django_demo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',  # 数据库主机
-        'PORT': 3306,  # 数据库端口
-        'USER': 'root',  # 数据库用户名
-        'PASSWORD': 'sqlmy',  # 数据库用户密码
-        'NAME': 'django_demo'  # 数据库名字
+        'NAME': 'django_demo1',  # 数据库名
+        'HOST': '127.0.0.1',  # 地址
+        'PORT': 3306,  # 端口
+        'USER': 'root',  # 用户名
+        'PASSWORD': 'mysql'  # 密码
     }
 }
 
@@ -116,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # LANGUAGE_CODE = 'en-us'
 #
 # TIME_ZONE = 'UTC'
-#  将语言和时区修改为中国大陆信息
+# 使用中文以及中国时区
 LANGUAGE_CODE = 'zh-hans'
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -129,8 +141,51 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+# 访问静态文件的前缀
 STATIC_URL = '/static/'
-# 查找静态文件的目录
+
+# 配置静态文件目录
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    # 指明静态文件目录
+    # '/Users/mering/Desktop/django_demo/static_files',# 不是用绝对路径
+    os.path.join(BASE_DIR, 'static_files'),
 ]
+
+# redis缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # 指明使用redis的1号数据库
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",  # 指明使用redis的1号数据库
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+# session使用的存储方式
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# 指明使用哪一个库保存session数据
+SESSION_CACHE_ALIAS = "session"
+
+# 文件上传目录
+MEDIA_ROOT = os.path.join(BASE_DIR, "static_files/media")
+
+# 对DRF框架进行配置
+REST_FRAMEWORK = {
+    # 指明限流默认使用的类
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "books": "1000/minute",
+        'books2': "300/minute"
+    },
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'EXCEPTION_HANDLER': 'books.exceptions.custom_exception_handler'
+}

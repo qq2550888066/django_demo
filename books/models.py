@@ -3,8 +3,8 @@ from django.db import models
 
 # 定义图书模型类BookInfo
 class BookInfo(models.Model):
-    btitle = models.CharField(max_length=20, verbose_name='名称')
-    bpub_date = models.DateField(verbose_name='发布日期')
+    btitle = models.CharField(max_length=20, verbose_name='名称', help_text="书的名字")
+    bpub_date = models.DateField(verbose_name='发布日期',help_text="发布时间")
     bread = models.IntegerField(default=0, verbose_name='阅读量')
     bcomment = models.IntegerField(default=0, verbose_name='评论量')
     is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
@@ -26,6 +26,7 @@ class BookInfo(models.Model):
     pub_date.short_description = '发布时间'  # 设置方法字段在admin中显示的标题
     pub_date.admin_order_field = 'bpub_date'
 
+
 # 定义英雄模型类HeroInfo
 class HeroInfo(models.Model):
     GENDER_CHOICES = (
@@ -37,6 +38,7 @@ class HeroInfo(models.Model):
     hcomment = models.CharField(max_length=200, null=True, verbose_name='描述信息')
     hbook = models.ForeignKey(BookInfo, on_delete=models.CASCADE, verbose_name='图书')  # 外键
     is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
+
     # 隐藏属性 id hbook_id
     class Meta:
         db_table = 'tb_heros'

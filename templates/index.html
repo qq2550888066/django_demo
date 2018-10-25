@@ -1,10 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>index.html</title>
-</head>
-<body>
-<h1>index templates</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+    子模板body <br/>
+    {{ block.super }}
+{% endblock %}
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#</head>#}
+{#<body>#}
+{##}
+{#{{ city }}#}
+{#<br>#}
+{#获取数组元素#}
+{##}
+{#{{ alist[0] }} 不支持#}
+{#{{ alist.0 }}#}
+{##}
+{#{% if a==1 %}  # 错误#}
+{##}
+{#{% endif %}#}
+{##}
+{#{% if a == 1 %}#}
+{#{% endif %}#}
+{##}
+{#</body>#}
+{#</html>#}
